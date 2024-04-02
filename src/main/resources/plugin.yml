@@ -1,0 +1,4 @@
+name: AiryLib
+version: '${version}'
+main: dev.airyy.airylib.AiryLib
+api-version: '1.20'
