@@ -4,7 +4,7 @@ public interface Argument<T> {
 
     String getPlaceholder();
 
-    T convert(String value);
+    T convert(String value) throws InvalidArgumentException;
 
-    String getString(String value);
+    String getString(String value) throws InvalidArgumentException;
 }

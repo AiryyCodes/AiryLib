@@ -3,6 +3,8 @@ package dev.airyy.airylib.plugin.commands;
 import dev.airyy.airylib.command.annotations.Command;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+
 public class PingCommand {
 
     @Command("ping")

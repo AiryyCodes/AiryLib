@@ -39,7 +39,7 @@ public class CommandManager {
     public <T> void registerCommand(T command) {
         List<Method> methods = Reflection.getAnnotatedMethods(command, Command.class);
 
-        Map<String, Method> methodMap = new HashMap<>();
+        Map<String, AbstractMap.SimpleEntry<Command, Method>> methodMap = new HashMap<>();
         Command commandName = methods.get(0).getAnnotation(Command.class);
         String baseCommandName = commandName.value().split(" ")[0];
         List<String> args = new ArrayList<>();
@@ -51,7 +51,9 @@ public class CommandManager {
             for (String arg : args) {
                 stringBuilder.append(arg).append(" ");
             }
-            methodMap.put(commandAnnotation.value(), method);
+
+            AbstractMap.SimpleEntry<Command, Method> commandMap = new AbstractMap.SimpleEntry<>(commandAnnotation, method);
+            methodMap.put(commandAnnotation.value(), commandMap);
         }
 
         CommandHandler<T> handler = new CommandHandler<>(methodMap, command, args, this, baseCommandName);

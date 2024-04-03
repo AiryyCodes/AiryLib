@@ -7,12 +7,16 @@ public class IntegerArgument implements Argument<Integer> {
     }
 
     @Override
-    public Integer convert(String value) {
-        return Integer.valueOf(value);
+    public Integer convert(String value) throws InvalidArgumentException {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            throw new InvalidArgumentException("Argument must be an integer");
+        }
     }
 
     @Override
-    public String getString(String value) {
+    public String getString(String value) throws InvalidArgumentException {
         return String.valueOf(convert(value).intValue());
     }
 }

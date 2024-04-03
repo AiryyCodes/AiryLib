@@ -7,12 +7,16 @@ public class FloatArgument implements Argument<Float> {
     }
 
     @Override
-    public Float convert(String value) {
-        return Float.valueOf(value);
+    public Float convert(String value) throws InvalidArgumentException {
+        try {
+            return Float.parseFloat(value);
+        } catch (NumberFormatException e) {
+            throw new InvalidArgumentException("Argument must be a float");
+        }
     }
 
     @Override
-    public String getString(String value) {
+    public String getString(String value) throws InvalidArgumentException {
         return String.valueOf(convert(value).floatValue());
     }
 }

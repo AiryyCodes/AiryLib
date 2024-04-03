@@ -11,12 +11,15 @@ public class PlayerArgument implements Argument<Player> {
     }
 
     @Override
-    public Player convert(String value) {
-        return Bukkit.getPlayer(value);
+    public Player convert(String value) throws InvalidArgumentException {
+        Player player = Bukkit.getPlayer(value);
+        if (player == null)
+            throw new InvalidArgumentException("Player not found");
+        return player;
     }
 
     @Override
-    public String getString(String value) {
+    public String getString(String value) throws InvalidArgumentException {
         return convert(value).getName();
     }
 }
