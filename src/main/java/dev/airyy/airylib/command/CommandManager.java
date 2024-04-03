@@ -1,6 +1,7 @@
 package dev.airyy.airylib.command;
 
 import dev.airyy.airylib.command.annotations.Command;
+import dev.airyy.airylib.command.annotations.Permission;
 import dev.airyy.airylib.command.arguments.Argument;
 import dev.airyy.airylib.command.arguments.FloatArgument;
 import dev.airyy.airylib.command.arguments.IntegerArgument;
@@ -39,7 +40,7 @@ public class CommandManager {
     public <T> void registerCommand(T command) {
         List<Method> methods = Reflection.getAnnotatedMethods(command, Command.class);
 
-        Map<String, AbstractMap.SimpleEntry<Command, Method>> methodMap = new HashMap<>();
+        Map<String, AbstractMap.SimpleEntry<CommandData, Method>> methodMap = new HashMap<>();
         Command commandName = methods.get(0).getAnnotation(Command.class);
         String baseCommandName = commandName.value().split(" ")[0];
         List<String> args = new ArrayList<>();
@@ -52,7 +53,15 @@ public class CommandManager {
                 stringBuilder.append(arg).append(" ");
             }
 
-            AbstractMap.SimpleEntry<Command, Method> commandMap = new AbstractMap.SimpleEntry<>(commandAnnotation, method);
+            Permission permissionAnnotation = method.getAnnotation(Permission.class);
+
+            CommandData commandData = new CommandData(
+                    baseCommandName,
+                    permissionAnnotation != null ? permissionAnnotation.value() : "",
+                    commandAnnotation.value()
+            );
+
+            AbstractMap.SimpleEntry<CommandData, Method> commandMap = new AbstractMap.SimpleEntry<>(commandData, method);
             methodMap.put(commandAnnotation.value(), commandMap);
         }
 

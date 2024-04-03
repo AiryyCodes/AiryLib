@@ -1,5 +1,6 @@
 package dev.airyy.airylib.command;
 
+import dev.airyy.airylib.command.annotations.Permission;
 import dev.airyy.airylib.command.arguments.Argument;
 import dev.airyy.airylib.command.arguments.InvalidArgumentException;
 import dev.airyy.airylib.misc.StringUtils;
@@ -14,13 +15,13 @@ import java.util.*;
 
 public final class CommandHandler<T> extends Command {
 
-    private final Map<String, AbstractMap.SimpleEntry<dev.airyy.airylib.command.annotations.Command, Method>> methods;
+    private final Map<String, AbstractMap.SimpleEntry<CommandData, Method>> methods;
     private final T commandClass;
     private final List<String> availableArgs;
     private final CommandManager commandManager;
 
 
-    public CommandHandler(Map<String, AbstractMap.SimpleEntry<dev.airyy.airylib.command.annotations.Command, Method>> methods, T commandClass, List<String> availableArgs, CommandManager commandManager, String name) {
+    public CommandHandler(Map<String, AbstractMap.SimpleEntry<CommandData, Method>> methods, T commandClass, List<String> availableArgs, CommandManager commandManager, String name) {
         super(name);
 
         this.methods = methods;
@@ -29,7 +30,7 @@ public final class CommandHandler<T> extends Command {
         this.commandManager = commandManager;
     }
 
-    public CommandHandler(Map<String, AbstractMap.SimpleEntry<dev.airyy.airylib.command.annotations.Command, Method>> method, T commandClass, List<String> availableArgs, CommandManager commandManager, String name, String description, String usageMessage, List<String> aliases) {
+    public CommandHandler(Map<String, AbstractMap.SimpleEntry<CommandData, Method>> method, T commandClass, List<String> availableArgs, CommandManager commandManager, String name, String description, String usageMessage, List<String> aliases) {
         super(name, description, usageMessage, aliases);
 
         this.methods = method;
@@ -44,7 +45,7 @@ public final class CommandHandler<T> extends Command {
         params.add(sender);
 
         Method method = null;
-        dev.airyy.airylib.command.annotations.Command commandAnnotation = null;
+        String commandAnnotation = "";
         for (String key : methods.keySet()) {
             String[] split = key.split(" ");
             List<String> splitList = new ArrayList<>();
@@ -57,7 +58,7 @@ public final class CommandHandler<T> extends Command {
 
             if (key.equalsIgnoreCase(commandName) && args.length == 0) {
                 method = methods.get(key).getValue();
-                commandAnnotation = methods.get(key).getKey();
+                commandAnnotation = methods.get(key).getKey().commandAnnotation();
                 break;
             }
 
@@ -66,13 +67,19 @@ public final class CommandHandler<T> extends Command {
             }
 
             method = methods.get(key).getValue();
-            commandAnnotation = methods.get(key).getKey();
+            commandAnnotation = methods.get(key).getKey().commandAnnotation();
         }
 
-        if (method == null)
+        if (method == null || commandAnnotation.isEmpty())
             return true;
 
-        List<String> argsList = StringUtils.splitFromIndex(commandAnnotation.value(), " ", 1);
+        String permission = methods.get(commandAnnotation).getKey().permission();
+        if (!permission.isEmpty() && !sender.hasPermission(permission)) {
+            sender.sendMessage("§cYou do not have permission to execute this command.");
+            return true;
+        }
+
+        List<String> argsList = StringUtils.splitFromIndex(commandAnnotation, " ", 1);
 
         for (int i = 0; i < args.length; i++) {
             Argument<?> argument = commandManager.getArgument(argsList.get(i));
@@ -110,7 +117,6 @@ public final class CommandHandler<T> extends Command {
             return;
         }
 
-        Object[] paramsArray = params.toArray();
         callMethod(method, params);
     }
 
