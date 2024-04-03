@@ -21,6 +21,8 @@ public class CommandManager {
 
     private final Map<String, Argument<?>> arguments = new HashMap<>();
 
+    private String permissionMessage = "§cYou do not have permission to execute this command.";
+
     public CommandManager(JavaPlugin plugin) {
         this.plugin = plugin;
 
@@ -75,5 +77,13 @@ public class CommandManager {
 
     public Argument<?> getArgument(String placeholder) {
         return arguments.get(placeholder);
+    }
+
+    public String getPermissionMessage() {
+        return permissionMessage;
+    }
+
+    public void setPermissionMessage(String permissionMessage) {
+        this.permissionMessage = permissionMessage;
     }
 }

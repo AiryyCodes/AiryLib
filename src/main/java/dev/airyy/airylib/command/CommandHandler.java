@@ -1,10 +1,9 @@
 package dev.airyy.airylib.command;
 
-import dev.airyy.airylib.command.annotations.Permission;
 import dev.airyy.airylib.command.arguments.Argument;
 import dev.airyy.airylib.command.arguments.InvalidArgumentException;
+import dev.airyy.airylib.misc.ChatUtils;
 import dev.airyy.airylib.misc.StringUtils;
-import dev.airyy.airylib.reflection.Reflection;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -75,7 +74,7 @@ public final class CommandHandler<T> extends Command {
 
         String permission = methods.get(commandAnnotation).getKey().permission();
         if (!permission.isEmpty() && !sender.hasPermission(permission)) {
-            sender.sendMessage("§cYou do not have permission to execute this command.");
+            sender.sendMessage(ChatUtils.color(commandManager.getPermissionMessage()));
             return true;
         }
 
